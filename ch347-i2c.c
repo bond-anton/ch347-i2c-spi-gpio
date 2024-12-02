@@ -28,6 +28,10 @@ enum ch347_speed_t {
 
 #define CH347_MAX_I2C_XFER 0x3f
 
+int CH347_i2c_read1(struct CH347_device *dev, uint8_t addr);
+int CH347_i2c_read(struct CH347_device *dev, struct i2c_msg *msg);
+int CH347_i2c_write(struct CH347_device *dev, struct i2c_msg *msg);
+
 static int CH347_usb_transfer(struct CH347_device *CH347_dev, int out_len, int in_len)
 {
     int retval;

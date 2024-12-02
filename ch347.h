@@ -6,6 +6,7 @@
 #include <linux/usb.h>
 #include <linux/i2c.h>
 #include <linux/gpio.h>
+#include <linux/gpio/driver.h>
 #include <linux/spi/spi.h>
 
 #define DEFAULT_TIMEOUT 1000	/* 1s USB requests timeout */
