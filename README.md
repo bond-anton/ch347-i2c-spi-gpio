@@ -314,6 +314,26 @@ will corrupt the bus. The driver does not prevent it.
 | `enroll-mok.sh` | One-time MOK enrollment |
 | `dkms.conf` | DKMS packaging (`PACKAGE_NAME=ch347-linux-driver`) |
 | `ch341-i2c-dissector.lua` | Wireshark dissector for the USB protocol |
+| `examples/` | MCP4251 pot and MCP3208 ADC scripts, plus benchmarks |
+
+## Examples
+
+`examples/` holds working Python scripts for an MCP4251 digital pot on CS1
+and an MCP3208 ADC on CS0, driven through `/dev/spidev0.1` and
+`/dev/spidev0.0`. They use raw `ioctl` calls, so only the standard library
+is needed.
+
+| Script | Purpose |
+|---|---|
+| `ch347_spi.py` | Shared helpers: open, transfer, pot write, ADC read |
+| `pot_sweep.py` | Sweep both wipers, print the ADC codes |
+| `adc_read.py` | Read all eight MCP3208 channels once |
+| `pot_adc_loop.py` | Closed loop: set the pot, read the ADC, check linearity |
+| `bench_pot_sweep.py` | Write-only pot sweep, unbatched vs batched |
+| `bench_roundtrip.py` | Set/read round trip, unbatched vs batched |
+
+See [examples/README.md](examples/README.md) for wiring, expected results
+and the protocol details the scripts depend on.
 
 ## Alternatives considered
 
