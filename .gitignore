@@ -13,6 +13,9 @@ Module.symvers
 # Signing key material — never commit
 mok/
 
+# Local working notes — contains machine-specific paths and credentials
+AGENTS.md
+
 # Python
 __pycache__/
 *.pyc
