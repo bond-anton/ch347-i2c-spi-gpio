@@ -83,10 +83,10 @@ static int ch347_gpio_get_multiple(struct gpio_chip *chip,
 	return 0;
 }
 
-static void ch347_gpio_set(struct gpio_chip *chip, unsigned int offset, int value)
+static int ch347_gpio_set(struct gpio_chip *chip, unsigned int offset, int value)
 {
 	struct CH347_device *dev = gpiochip_get_data(chip);
-	if (offset > 7) return;
+	if (offset > 7) return -EINVAL;
 	memset(dev->gpio_obuf + 3, 0, 8); // clear all pins
 	dev->gpio_obuf[3 + offset] |= 0xc0; // enable pin change
 	if (dev->gpio_ibuf[3 + offset] & 0x80) { // copy direction
@@ -96,10 +96,11 @@ static void ch347_gpio_set(struct gpio_chip *chip, unsigned int offset, int valu
 		dev->gpio_obuf[3 + offset] |= 0x08;
 	}
 	gpio_transfer(dev);
+	return 0;
 }
 
-static void ch347_gpio_set_multiple(struct gpio_chip *chip,
-				    unsigned long *mask, unsigned long *bits)
+static int ch347_gpio_set_multiple(struct gpio_chip *chip,
+				   unsigned long *mask, unsigned long *bits)
 {
 	struct CH347_device *dev = gpiochip_get_data(chip);
 	memset(dev->gpio_obuf + 3, 0, 8); // clear all pins
@@ -112,6 +113,7 @@ static void ch347_gpio_set_multiple(struct gpio_chip *chip,
 		} 
 	}
 	gpio_transfer(dev);
+	return 0;
 }
 
 static int ch347_gpio_direction_input(struct gpio_chip *chip,

@@ -18,9 +18,7 @@
 
 static void CH347_usb_free_device(struct CH347_device *dev)
 {
-#if 0
     CH347_spi_remove(dev);
-#endif
     ch347_gpio_remove(dev);
     CH347_i2c_remove(dev);
 
@@ -71,13 +69,12 @@ static int CH347_usb_probe(struct usb_interface *iface, const struct usb_device_
 	if (rc)
 		goto rem_i2c;
 
-#if 0
     rc = CH347_spi_init(dev);
 	if (rc)
 		goto rem_gpio;
-#endif
 	return 0;
 
+rem_gpio:
     ch347_gpio_remove(dev);
 
 rem_i2c:
