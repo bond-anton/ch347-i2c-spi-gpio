@@ -11,8 +11,7 @@ Module.symvers
 ..module-common.o.cmd
 
 # Signing key material — never commit
-mok/mok.key
-mok/mok.pub
+mok/
 
 # Python
 __pycache__/
