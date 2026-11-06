@@ -1,11 +1,35 @@
 # ch347-linux-driver
 
 Out-of-tree Linux kernel driver for the **WCH CH347** USB-to-SPI/I2C/GPIO
-adapter, ported to work on modern kernels (tested on **7.2.15**, Fedora 45).
+adapter, ported to work on modern kernels.
 
-Forked from [zetta-shao/ch347-i2c-spi-gpio](https://github.com/zetta-shao/ch347-i2c-spi-gpio).
+**Fork of [zetta-shao/ch347-i2c-spi-gpio](https://github.com/zetta-shao/ch347-i2c-spi-gpio).**
 The upstream tree does not compile on kernels ≥ 6.0 and ships with SPI
-disabled; this copy fixes both.
+disabled; this fork fixes both and adds the SPI controller work described in
+[Port notes](#port-notes--what-changed-from-upstream).
+
+## Build environment
+
+| | |
+|---|---|
+| Kernel | **7.2.15-300.fc45.x86_64** |
+| Distribution | Fedora 45 |
+| Architecture | x86_64 |
+| Secure Boot | enabled — the module must be signed |
+
+The Makefile takes the kernel from `uname -r`, so any kernel with matching
+`kernel-devel` headers should work. The version above is what this tree is
+built and tested against; older kernels are untested.
+
+## License
+
+GPL-2.0. Every source file carries an `SPDX-License-Identifier: GPL-2.0` tag
+and `ch347-core.c` declares `MODULE_LICENSE("GPL v2")`. Full text in
+[LICENSE](LICENSE).
+
+This is a derivative work of the upstream driver, which is itself GPL-2.0.
+Copyright remains with the original authors — see the headers in each source
+file.
 
 ## Target hardware
 
@@ -217,12 +241,6 @@ Several symbols it references were never defined at all.
 | `Makefile` | `ch347-spi.o` on its own line, not part of `ch347-buses-objs` | merged into the object list |
 | `ch347.h` | SPI struct fields and prototypes wrapped in `#if 0` | guards removed |
 | `ch347-core.c` | `CH347_spi_init`/`CH347_spi_remove` calls wrapped in `#if 0` — SPI never initialised at probe | guards removed |
-| `ch347.h` | `CH347_SPI_NSEGS` **never defined anywhere** | added `#define CH347_SPI_NSEGS 8` |
-
-`CH347_SPI_NSEGS` has no upstream reference value. It sets the maximum message
-size (`NSEGS * (SEG_SIZE - 1)` = 4088 bytes at 8) and the per-CS buffer size
-(4 KB). Raise it if large transfers return `-EMSGSIZE`; it is a throughput and
-memory tradeoff, not a correctness constraint.
 
 ### Naming
 
@@ -267,8 +285,11 @@ out-of-range offset instead of silently returning.
 
 ## GPIO pin usage
 
-SPI claims these lines from the shared GPIO chip via
-`gpiochip_request_own_desc`:
+The GPIO chip exposes 8 lines. SPI does **not** claim them — there is no
+`gpiochip_request_own_desc` call in this tree, so the GPIO interface and SPI
+can both be used, and nothing returns `-EBUSY`.
+
+The lines are shared with the SPI signals at the hardware level:
 
 | Line | Signal |
 |---|---|
@@ -277,8 +298,8 @@ SPI claims these lines from the shared GPIO chip via
 | 5 | MOSI |
 | 7 | MISO |
 
-They are reserved only while at least one SPI slave is registered. Using the
-GPIO interface on these lines while SPI is active returns `-EBUSY`.
+Driving these lines through the GPIO interface while SPI traffic is running
+will corrupt the bus. The driver does not prevent it.
 
 ## Files
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Driver for the CH341T USB to I2C adapter
+ * Driver for the CH347 USB to SPI/I2C/GPIO adapter
  *
  * Copyright 2021, Frank Zago
  * Copyright (c) 2017 Gunar Schorcht (gunar@schorcht.net)
